@@ -1,2 +1,2 @@
 // Pomodoro Timer
-console.log('Testing branches!');
+console.log('Pomodoro Timer is running');
