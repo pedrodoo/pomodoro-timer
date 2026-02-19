@@ -171,3 +171,84 @@ body {
 .pomodoro-control:not(.pomodoro-control--primary):active {
   background-color: var(--color-border-subtle);
 }
+
+/* ─── Settings panel ─── */
+.settings-panel {
+  width: 100%;
+  max-width: 20rem;
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-xl);
+}
+
+.settings-panel h2 {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-md);
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.settings-row:last-of-type {
+  margin-bottom: var(--space-lg);
+}
+
+.settings-row label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.settings-panel input[type="number"] {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settings-panel input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+.settings-panel input[type="number"]::placeholder {
+  color: var(--color-text-faint);
+}
+
+.settings-panel #apply-settings {
+  width: 100%;
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.settings-panel #apply-settings:hover {
+  background-color: var(--color-border-subtle);
+  border-color: var(--color-border);
+}
+
+.settings-panel #apply-settings:active {
+  background-color: var(--color-border);
+}
