@@ -99,6 +99,19 @@ body {
   padding: var(--space-lg);
 }
 
+/* Flash background when timer reaches zero and mode switches */
+@keyframes timer-flash-bg {
+  0% { background-color: var(--color-bg); }
+  20% { background-color: var(--color-surface-elevated); }
+  40% { background-color: var(--color-accent); }
+  70% { background-color: var(--color-surface-elevated); }
+  100% { background-color: var(--color-bg); }
+}
+
+#app.timer-flash {
+  animation: timer-flash-bg 0.6s ease-out;
+}
+
 /* ─── Timer components ─── */
 .pomodoro-timer {
   display: flex;

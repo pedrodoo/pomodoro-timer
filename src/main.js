@@ -1,8 +1,8 @@
-// Pomodoro Timer – state and config
-const WORK_DURATION_SEC = 25 * 60;   // 25 minutes
-const BREAK_DURATION_SEC = 5 * 60;   // 5 minutes
+// Pomodoro Timer – state and config (updated from settings panel)
+let workDurationSec = 25 * 60;   // 25 minutes
+let breakDurationSec = 5 * 60;   // 5 minutes
 
-let timeRemaining = WORK_DURATION_SEC;  // seconds
+let timeRemaining = workDurationSec;  // seconds
 let isRunning = false;
 let currentMode = 'work';  // 'work' | 'break'
 let tickInterval = null;
@@ -12,6 +12,9 @@ const app = document.getElementById('app');
 const modeIndicator = document.getElementById('mode-indicator');
 const timeDisplay = document.getElementById('time-display');
 const startPauseBtn = document.getElementById('start-pause-btn');
+const workDurationInput = document.getElementById('work-duration');
+const breakDurationInput = document.getElementById('break-duration');
+const applySettingsBtn = document.getElementById('apply-settings');
 
 /** Format seconds as MM:SS */
 function formatTime(seconds) {
@@ -34,15 +37,52 @@ function tick() {
   if (timeRemaining <= 0) {
     if (currentMode === 'work') {
       currentMode = 'break';
-      timeRemaining = BREAK_DURATION_SEC;
+      timeRemaining = breakDurationSec;
     } else {
       currentMode = 'work';
-      timeRemaining = WORK_DURATION_SEC;
+      timeRemaining = workDurationSec;
     }
+    playNotificationSound();
+    triggerFlash();
   } else {
     timeRemaining -= 1;
   }
   updateDOM();
+}
+
+/** Play a short notification sound when mode switches (timer reached zero) */
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(1100, now + 0.1);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+    gain.gain.linearRampToValueAtTime(0.15, now + 0.15);
+    gain.gain.linearRampToValueAtTime(0, now + 0.35);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  } catch (_) {
+    // Ignore if audio is blocked (e.g. autoplay policy)
+  }
+}
+
+/** Briefly flash the app background when mode switches (timer reached zero) */
+function triggerFlash() {
+  app.classList.remove('timer-flash');
+  app.offsetHeight; // force reflow so animation can run again
+  app.classList.add('timer-flash');
+  const onEnd = () => {
+    app.classList.remove('timer-flash');
+    app.removeEventListener('animationend', onEnd);
+  };
+  app.addEventListener('animationend', onEnd);
 }
 
 /** Start or pause the countdown */
@@ -65,7 +105,21 @@ function reset() {
     tickInterval = null;
   }
   currentMode = 'work';
-  timeRemaining = WORK_DURATION_SEC;
+  timeRemaining = workDurationSec;
+  updateDOM();
+}
+
+/** Apply settings from panel: update durations and refresh timer display */
+function applySettings() {
+  const workMin = Math.max(1, Math.min(60, Number(workDurationInput.value) || 25));
+  const breakMin = Math.max(1, Math.min(60, Number(breakDurationInput.value) || 5));
+  workDurationSec = workMin * 60;
+  breakDurationSec = breakMin * 60;
+  // Sync inputs in case we clamped
+  workDurationInput.value = workMin;
+  breakDurationInput.value = breakMin;
+  // Update current phase to new duration
+  timeRemaining = currentMode === 'work' ? workDurationSec : breakDurationSec;
   updateDOM();
 }
 
@@ -73,6 +127,7 @@ function reset() {
 function init() {
   startPauseBtn.addEventListener('click', toggleStartPause);
   document.getElementById('reset-btn').addEventListener('click', reset);
+  applySettingsBtn.addEventListener('click', applySettings);
   updateDOM();
 }
 
