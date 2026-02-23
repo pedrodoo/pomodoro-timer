@@ -1,12 +1,13 @@
 // Pomodoro Timer – state and config (updated from settings panel)
 let workDurationSec = 25 * 60;   // 25 minutes
 let breakDurationSec = 5 * 60;   // 5 minutes
+let longBreakDurationSec = 20 * 60;  // 20 minutes (after 4 rounds)
 
 let timeRemaining = workDurationSec;  // seconds
 let isRunning = false;
 let currentMode = 'work';  // 'work' | 'break'
 let tickInterval = null;
-let sessionCount = 1;  // Pomodoro round (incremented when a focus session completes)
+let sessionCount = 1;  // Pomodoro round (incremented when a focus session completes); 5 = long break
 /** When the current phase started (ms), for smooth progress ring. */
 let phaseStartTime = 0;
 let progressRingRAFId = null;
@@ -19,6 +20,7 @@ const modeFocusBtn = document.getElementById('mode-focus');
 const modeBreakBtn = document.getElementById('mode-break');
 const workDurationInput = document.getElementById('work-duration');
 const breakDurationInput = document.getElementById('break-duration');
+const longBreakDurationInput = document.getElementById('long-break-duration');
 const applySettingsBtn = document.getElementById('apply-settings');
 const menuBtn = document.getElementById('menu-btn');
 const settingsOverlay = document.getElementById('settings-overlay');
@@ -28,7 +30,13 @@ const progressRingGlow = document.getElementById('progress-ring-glow');
 const modeLabel = document.getElementById('mode-label');
 const presetLabel = document.getElementById('preset-label');
 const sessionCounter = document.getElementById('session-counter');
+const sessionCounterCoffee = document.getElementById('session-counter-coffee');
 const runningIndicator = document.getElementById('running-indicator');
+
+/** Current break duration in seconds (short or long depending on session). */
+function getCurrentBreakDurationSec() {
+  return (currentMode === 'break' && sessionCount === 5) ? longBreakDurationSec : breakDurationSec;
+}
 
 /** Format seconds as MM:SS */
 function formatTime(seconds) {
@@ -57,7 +65,7 @@ function updateProgressRingOnly(progress) {
 /** Smooth progress loop: advance the ring every frame (Swiss-watch style), not per second. */
 function smoothProgressLoop() {
   if (!isRunning) return;
-  const totalSec = currentMode === 'work' ? workDurationSec : breakDurationSec;
+  const totalSec = currentMode === 'work' ? workDurationSec : getCurrentBreakDurationSec();
   const elapsed = (Date.now() - phaseStartTime) / 1000;
   const progress = totalSec > 0 ? elapsed / totalSec : 1;
   updateProgressRingOnly(progress);
@@ -66,7 +74,7 @@ function smoothProgressLoop() {
 
 /** Refresh all timer-related DOM from state */
 function updateDOM() {
-  const totalSec = currentMode === 'work' ? workDurationSec : breakDurationSec;
+  const totalSec = currentMode === 'work' ? workDurationSec : getCurrentBreakDurationSec();
   const progress = totalSec > 0 ? (totalSec - timeRemaining) / totalSec : 1;
 
   timeDisplay.textContent = formatTime(timeRemaining);
@@ -106,9 +114,34 @@ function updateDOM() {
   modeLabel.textContent = currentMode === 'work' ? 'Focus' : 'Break';
   presetLabel.textContent = currentMode === 'work'
     ? `${Math.round(workDurationSec / 60)} min`
-    : `${Math.round(breakDurationSec / 60)} min`;
-  sessionCounter.textContent = `Round ${sessionCount}`;
-  sessionCounter.setAttribute('aria-label', `Pomodoro round ${sessionCount}`);
+    : `${Math.round(getCurrentBreakDurationSec() / 60)} min`;
+
+  // Round counter: tomato states (completed / current / upcoming) + coffee for long break
+  const isLongBreak = currentMode === 'break' && sessionCount === 5;
+  const tomatoes = sessionCounter?.querySelectorAll('.session-counter__tomato');
+  if (tomatoes) {
+    tomatoes.forEach((el, i) => {
+      const round = i + 1;
+      el.classList.remove('is-completed', 'is-current', 'is-upcoming');
+      const completed = round < sessionCount;
+      const isCurrent = currentMode === 'work' && round === sessionCount;
+      if (completed) el.classList.add('is-completed');
+      else if (isCurrent) el.classList.add('is-current');
+      else el.classList.add('is-upcoming');
+    });
+  }
+  if (sessionCounterCoffee) {
+    sessionCounterCoffee.hidden = !isLongBreak;
+  }
+  if (sessionCounter) {
+    sessionCounter.setAttribute(
+      'aria-label',
+      isLongBreak
+        ? `Long break, ${Math.round(longBreakDurationSec / 60)} minutes`
+        : `Pomodoro round ${sessionCount <= 4 ? sessionCount : 4} of 4`
+    );
+  }
+
   runningIndicator.classList.toggle('is-visible', isRunning);
 
   // Focus/Break toggle: highlight active
@@ -125,10 +158,11 @@ function tick() {
     if (currentMode === 'work') {
       sessionCount += 1;
       currentMode = 'break';
-      timeRemaining = breakDurationSec;
+      timeRemaining = sessionCount === 5 ? longBreakDurationSec : breakDurationSec;
     } else {
       currentMode = 'work';
       timeRemaining = workDurationSec;
+      if (sessionCount === 5) sessionCount = 1;  // after long break, start new cycle
     }
     phaseStartTime = Date.now();
     playNotificationSound();
@@ -178,7 +212,7 @@ function triggerFlash() {
 function toggleStartPause() {
   isRunning = !isRunning;
   if (isRunning) {
-    const totalSec = currentMode === 'work' ? workDurationSec : breakDurationSec;
+    const totalSec = currentMode === 'work' ? workDurationSec : getCurrentBreakDurationSec();
     phaseStartTime = Date.now() - (totalSec - timeRemaining) * 1000;
     tickInterval = setInterval(tick, 1000);
   } else {
@@ -205,10 +239,13 @@ function reset() {
 function applySettings() {
   const workMin = Math.max(1, Math.min(60, Number(workDurationInput.value) || 25));
   const breakMin = Math.max(1, Math.min(60, Number(breakDurationInput.value) || 5));
+  const longBreakMin = Math.max(1, Math.min(60, Number(longBreakDurationInput?.value) || 20));
   workDurationSec = workMin * 60;
   breakDurationSec = breakMin * 60;
+  longBreakDurationSec = longBreakMin * 60;
   workDurationInput.value = workMin;
   breakDurationInput.value = breakMin;
+  if (longBreakDurationInput) longBreakDurationInput.value = longBreakMin;
   reset();
 }
 
@@ -239,6 +276,7 @@ function switchToFocus() {
   if (currentMode === 'break') {
     currentMode = 'work';
     timeRemaining = workDurationSec;
+    if (sessionCount === 5) sessionCount = 1;  // from long break, start new cycle
     phaseStartTime = Date.now(); /* reset ring to 0 for new phase */
     updateDOM();
   }
@@ -248,7 +286,7 @@ function switchToFocus() {
 function switchToBreak() {
   if (currentMode === 'work') {
     currentMode = 'break';
-    timeRemaining = breakDurationSec;
+    timeRemaining = (sessionCount === 5 ? longBreakDurationSec : breakDurationSec);
     phaseStartTime = Date.now(); /* reset ring to 0 for new phase */
     updateDOM();
   }

@@ -596,10 +596,86 @@ body[data-mode="break"] .mode-toggle__pill {
   50% { opacity: 0.5; }
 }
 
+/* Round counter: 4 tomatoes + optional coffee for long break */
 .session-counter {
-  font-size: var(--text-sm);
-  color: var(--color-text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   margin-top: calc(-1 * var(--space-md));
+  min-height: 1.5rem;
+}
+
+.session-counter__tomatoes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.session-counter__tomato {
+  display: inline-flex;
+  color: var(--color-text-faint);
+  opacity: 0.5;
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.session-counter__tomato svg {
+  display: block;
+}
+
+/* Completed round: filled tomato */
+.session-counter__tomato.is-completed {
+  color: var(--color-work);
+  opacity: 1;
+}
+
+.session-counter__tomato.is-completed svg {
+  fill: var(--color-work);
+  stroke: var(--color-work);
+}
+
+/* Current round: outlined / highlighted */
+.session-counter__tomato.is-current {
+  color: var(--color-work);
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.session-counter__tomato.is-current svg {
+  fill: none;
+  stroke: var(--color-work);
+  stroke-width: 2;
+}
+
+/* Upcoming: muted outline */
+.session-counter__tomato.is-upcoming {
+  color: var(--color-text-faint);
+  opacity: 0.6;
+}
+
+.session-counter__tomato.is-upcoming svg {
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Long break: coffee cup (shown only when active) */
+.session-counter__coffee {
+  display: inline-flex;
+  margin-left: var(--space-xs);
+  color: var(--color-break);
+  opacity: 1;
+}
+
+.session-counter__coffee:not([hidden]) {
+  display: inline-flex;
+}
+
+.session-counter__coffee[hidden] {
+  display: none !important;
+}
+
+.session-counter__coffee svg {
+  display: block;
 }
 
 .pomodoro-controls {
