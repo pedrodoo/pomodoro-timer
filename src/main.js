@@ -87,7 +87,7 @@ function updateDOM() {
     setTimeout(() => timeDisplay.classList.remove('timer-tick'), 200);
   }
 
-  // Color shift: last 2 minutes → gradually tint digits toward warning
+  // Color shift: last 2 minutes → gradually tint digits toward current mode's theme color (work/break)
   const windDown = timeRemaining <= 120 ? (120 - timeRemaining) / 120 : 0;
   app.style.setProperty('--timer-wind-down', String(windDown));
 

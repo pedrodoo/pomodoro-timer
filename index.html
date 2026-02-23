@@ -41,6 +41,20 @@
             <input type="number" id="long-break-duration" min="1" max="60" value="20" />
         </div>
         <button type="button" id="apply-settings">Apply</button>
+        <hr class="settings-drawer__divider" aria-hidden="true" />
+        <section class="settings-shortcuts" aria-labelledby="shortcuts-heading">
+            <h3 id="shortcuts-heading" class="settings-shortcuts__title">⌨ Keyboard shortcuts</h3>
+            <dl class="settings-shortcuts__list">
+                <div class="settings-shortcuts__row">
+                    <dt><kbd>Space</kbd></dt>
+                    <dd>Start / Pause</dd>
+                </div>
+                <div class="settings-shortcuts__row">
+                    <dt><kbd>R</kbd></dt>
+                    <dd>Reset</dd>
+                </div>
+            </dl>
+        </section>
     </aside>
     <div id="app">
         <div class="atmosphere" aria-hidden="true">
@@ -83,25 +97,26 @@
                             </feMerge>
                         </filter>
                     </defs>
-                    <circle class="progress-ring__track" cx="50" cy="50" r="45" fill="none" stroke-width="8" />
                     <circle id="progress-ring-glow" class="progress-ring__glow" cx="50" cy="50" r="45" fill="none" stroke-width="8" stroke-linecap="round" />
                     <circle id="progress-ring-circle" class="progress-ring__fill" cx="50" cy="50" r="45" fill="none" stroke-width="8" stroke-linecap="round" />
                 </svg>
                 <div class="timer-display__inner">
-                    <span id="mode-label" class="timer-mode-label">Focus</span>
+                    <div class="timer-mode-row">
+                        <span id="mode-label" class="timer-mode-label">Focus</span>
+                        <span id="preset-label" class="timer-preset-label">25 min</span>
+                    </div>
+                    <div id="session-counter" class="session-counter" role="img" aria-label="Pomodoro round 1">
+                        <span class="session-counter__tomatoes" aria-hidden="true">
+                            <span class="session-counter__tomato" data-round="1" title="Round 1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
+                            <span class="session-counter__tomato" data-round="2" title="Round 2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
+                            <span class="session-counter__tomato" data-round="3" title="Round 3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
+                            <span class="session-counter__tomato" data-round="4" title="Round 4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
+                        </span>
+                        <span id="session-counter-coffee" class="session-counter__coffee" aria-hidden="true" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span>
+                    </div>
                     <div id="time-display" class="pomodoro-time" aria-label="Time remaining">25:00</div>
-                    <span id="preset-label" class="timer-preset-label">25 min</span>
                     <span id="running-indicator" class="running-indicator" aria-hidden="true"></span>
                 </div>
-            </div>
-            <div id="session-counter" class="session-counter" role="img" aria-label="Pomodoro round 1">
-                <span class="session-counter__tomatoes" aria-hidden="true">
-                    <span class="session-counter__tomato" data-round="1" title="Round 1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
-                    <span class="session-counter__tomato" data-round="2" title="Round 2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
-                    <span class="session-counter__tomato" data-round="3" title="Round 3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
-                    <span class="session-counter__tomato" data-round="4" title="Round 4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5v2c0 1.5-.5 2.5-1 3"/></svg></span>
-                </span>
-                <span id="session-counter-coffee" class="session-counter__coffee" aria-hidden="true" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span>
             </div>
             <div class="pomodoro-controls">
                 <button type="button" id="start-pause-btn" class="pomodoro-control pomodoro-control--primary" aria-label="Start timer">Start</button>

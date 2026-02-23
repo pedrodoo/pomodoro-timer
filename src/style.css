@@ -254,6 +254,60 @@ body[data-mode="break"] .settings-drawer input[type="number"]:focus {
   background: var(--color-border);
 }
 
+.settings-drawer__divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-lg) 0;
+}
+
+.settings-shortcuts {
+  margin-top: var(--space-md);
+}
+
+.settings-shortcuts__title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.settings-shortcuts__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+}
+
+.settings-shortcuts__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.settings-shortcuts__row dt {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.settings-shortcuts__row dd {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.settings-shortcuts kbd {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
 /* Flash background when timer reaches zero and mode switches */
 @keyframes timer-flash-bg {
   0% { background-color: var(--color-bg); }
@@ -482,9 +536,9 @@ body[data-mode="break"] .mode-toggle__pill {
   align-items: center;
   justify-content: center;
   overflow: visible;
+  margin: 0 auto;
 }
 
-/* Segment length for 4 quarter-arcs: circumference / 8 ≈ 35.34 */
 .progress-ring {
   position: absolute;
   inset: 0;
@@ -492,16 +546,6 @@ body[data-mode="break"] .mode-toggle__pill {
   height: 100%;
   transform: rotate(-90deg); /* Start from top (12 o'clock) */
   overflow: visible;
-}
-
-.progress-ring__track {
-  stroke: var(--color-border);
-  stroke-dasharray: 35.34 35.34 35.34 35.34; /* 4 segment marks (quarter arcs) */
-  transition: stroke 0.3s ease;
-}
-
-#app[data-mode="work"] .progress-ring__track {
-  stroke: var(--color-border-subtle);
 }
 
 .progress-ring__glow {
@@ -531,6 +575,14 @@ body[data-mode="break"] .mode-toggle__pill {
   z-index: 1;
 }
 
+.timer-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
 .timer-mode-label {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
@@ -545,15 +597,28 @@ body[data-mode="break"] .mode-toggle__pill {
   color: var(--color-break-muted);
 }
 
+.timer-preset-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-faint);
+  opacity: 0.9;
+}
+
 .pomodoro-time {
   font-family: var(--font-mono);
   font-size: var(--text-timer);
   font-weight: 800;
   line-height: var(--line-height-timer);
-  color: color-mix(in srgb, var(--color-text) calc(100% - var(--timer-wind-down, 0) * 100%), var(--color-warning) calc(var(--timer-wind-down, 0) * 100%));
+  color: color-mix(in srgb, var(--color-text) calc(100% - var(--timer-wind-down, 0) * 100%), var(--color-work) calc(var(--timer-wind-down, 0) * 100%));
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   transition: color 0.25s ease;
+}
+
+#app[data-mode="break"] .pomodoro-time {
+  color: color-mix(in srgb, var(--color-text) calc(100% - var(--timer-wind-down, 0) * 100%), var(--color-break) calc(var(--timer-wind-down, 0) * 100%));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -568,48 +633,29 @@ body[data-mode="break"] .mode-toggle__pill {
   100% { transform: scale(1); }
 }
 
-.timer-preset-label {
-  font-size: var(--text-xs);
-  color: var(--color-text-faint);
-}
 
-/* Running indicator: subtle dot that pulses when timer is active */
+/* Running indicator: disabled (was a green dot that pulsed when timer was active) */
 .running-indicator {
-  position: absolute;
-  bottom: -0.75rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: var(--radius-full);
-  background: var(--color-success);
-  opacity: 0;
-  transform: scale(0.5);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  display: none;
 }
 .running-indicator.is-visible {
-  opacity: 1;
-  transform: scale(1);
-  animation: running-pulse 1.5s ease-in-out infinite;
+  display: none;
 }
 
-@keyframes running-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* Round counter: 4 tomatoes + optional coffee for long break */
+/* Round counter: 4 tomatoes + optional coffee for long break (under Focus label) */
 .session-counter {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  margin-top: calc(-1 * var(--space-md));
-  min-height: 1.5rem;
+  margin-top: var(--space-xs);
+  min-height: 2rem;
 }
 
 .session-counter__tomatoes {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
 }
 
 .session-counter__tomato {
@@ -621,6 +667,8 @@ body[data-mode="break"] .mode-toggle__pill {
 
 .session-counter__tomato svg {
   display: block;
+  width: 1.75rem;
+  height: 1.75rem;
 }
 
 /* Completed round: filled tomato */
@@ -676,6 +724,32 @@ body[data-mode="break"] .mode-toggle__pill {
 
 .session-counter__coffee svg {
   display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+/* Break mode: round counter uses break (teal) theme */
+#app[data-mode="break"] .session-counter__tomato.is-completed {
+  color: var(--color-break);
+}
+#app[data-mode="break"] .session-counter__tomato.is-completed svg {
+  fill: var(--color-break);
+  stroke: var(--color-break);
+}
+#app[data-mode="break"] .session-counter__tomato.is-current {
+  color: var(--color-break);
+}
+#app[data-mode="break"] .session-counter__tomato.is-current svg {
+  fill: none;
+  stroke: var(--color-break);
+  stroke-width: 2;
+}
+#app[data-mode="break"] .session-counter__tomato.is-upcoming {
+  color: var(--color-break-muted);
+}
+#app[data-mode="break"] .session-counter__tomato.is-upcoming svg {
+  fill: none;
+  stroke: currentColor;
 }
 
 .pomodoro-controls {
